@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, FlatList, Text, StyleSheet, Modal, TouchableHighlight, TextInput } from 'react-native';
 import Data from './Data';
-import { getCoursesFromApi } from '../API/Api';
+import { getCoursesFromApi, postCoursesFromApiUpdate } from '../API/Api';
 import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class List extends React.Component {
 
@@ -14,10 +15,10 @@ export default class List extends React.Component {
             data: [],
             isModalVisible: false,
             //textInput: '',
+            editedItem: 0,
             textInputProduit: '',
             textInputPrix: '',
-            textInputUnite: '',
-            editedItem: 0
+            textInputUnite: ''
         }
     }
 
@@ -35,12 +36,13 @@ export default class List extends React.Component {
     }
 
 
-    _setTextInput = (produit, prix, unit) => {
+    _setTextInput = (produit, prix, unite) => {
         this.setState({
             //textInput: text,
             textInputProduit: produit,
             textInputPrix: prix,
-            textInputUnite: unit
+            textInputUnite: unite,
+            disableItem: false
         })
     }
 
@@ -54,9 +56,11 @@ export default class List extends React.Component {
         const NewData = this.state.data.map( item => {
             if(item.id === editedItem){
                 //item.produit = this.state.textInput;
+                item.id = editedItem;
                 item.produit = this.state.textInputProduit;
                 item.prix = this.state.textInputPrix;
                 item.unite = this.state.textInputUnite;
+                postCoursesFromApiUpdate(item);
                 return item;
             }
             return item;
@@ -66,19 +70,30 @@ export default class List extends React.Component {
         });
     }
 
+    _disableItem = (idItem) => {
+        console.log(this.state.editedItem);
+            
+    }
+
     renderItem = ({item}) => {
         return (
         <TouchableHighlight onPress={() => {
             this._setModalVisible(true); 
             this._setTextInput(item.produit, item.prix, item.unite);
             this._setEditedItem(item.id);
-        }} 
-        underlayColor={"#f1f1f1"}
+            }} 
+            underlayColor={"#f1f1f1"}
         >
             <View style={styles.item}>
-            <View style={styles.marginLeft}>
-                <AntDesign name="leftcircle" size={24} color="black" />
-            </View>
+                <TouchableHighlight
+                    onPress={() => {
+                        this._disableItem(item.id);
+                    }}
+                >
+                    <View style={styles.marginLeft}>
+                        <AntDesign name="leftcircle" size={30} color="#FF7416" />
+                    </View>
+                </TouchableHighlight>
                 <View style={styles.viewItems}>
                     <Text style={[styles.produitText, styles.text]}>{item.produit}</Text>
                 </View>
@@ -109,6 +124,11 @@ export default class List extends React.Component {
 
         return(
             <View style={styles.contentContainer}>
+                <View style={styles.iconAdd}>
+                <TouchableHighlight>
+                <Ionicons name="ios-add-circle" size={70} color="#953163" />
+                </TouchableHighlight>
+                </View>
                 <FlatList 
                     ListHeaderComponent={header}
                     data={this.state.data}
@@ -160,6 +180,7 @@ export default class List extends React.Component {
                         >
                             <Text style={styles.text}>Save</Text>
                         </TouchableHighlight>
+
                     </View>
                 </Modal>
             </View>
@@ -238,7 +259,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textDecorationLine: 'underline',
         color: '#F04903',
-        
+    },
+    iconAdd: {
+        position: 'absolute',
+        zIndex: 10,
+        bottom: 20,
+        right: 30
 
     }
 })
