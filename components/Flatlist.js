@@ -13,7 +13,10 @@ export default class List extends React.Component {
             //data: this.initData,
             data: [],
             isModalVisible: false,
-            textInput: '',
+            //textInput: '',
+            textInputProduit: '',
+            textInputPrix: '',
+            textInputUnite: '',
             editedItem: 0
         }
     }
@@ -32,9 +35,12 @@ export default class List extends React.Component {
     }
 
 
-    _setTextInput = (text) => {
+    _setTextInput = (produit, prix, unit) => {
         this.setState({
-            textInput: text
+            //textInput: text,
+            textInputProduit: produit,
+            textInputPrix: prix,
+            textInputUnite: unit
         })
     }
 
@@ -47,7 +53,10 @@ export default class List extends React.Component {
     _handleEditItem = (editedItem) => {
         const NewData = this.state.data.map( item => {
             if(item.id === editedItem){
-                item.produit = this.state.textInput;
+                //item.produit = this.state.textInput;
+                item.produit = this.state.textInputProduit;
+                item.prix = this.state.textInputPrix;
+                item.unite = this.state.textInputUnite;
                 return item;
             }
             return item;
@@ -61,7 +70,7 @@ export default class List extends React.Component {
         return (
         <TouchableHighlight onPress={() => {
             this._setModalVisible(true); 
-            this._setTextInput(item.produit);
+            this._setTextInput(item.produit, item.prix, item.unite);
             this._setEditedItem(item.id);
         }} 
         underlayColor={"#f1f1f1"}
@@ -111,13 +120,32 @@ export default class List extends React.Component {
                     visible={this.state.isModalVisible}
                     >
                     <View style={styles.modalView}>
-                        <Text>Change</Text>
+                    <Text>Change</Text>
+                        <Text style={styles.labelFieldText}>Nom du produit:</Text>
                         <TextInput 
                             editable={true}
                             multiline={false}
                             maxLength={200}
-                            defaultValue={this.state.textInput}
-                            onChangeText={(text) => this.setState({ textInput: text })}
+                            defaultValue={this.state.textInputProduit}
+                            onChangeText={(text) => this.setState({ textInputProduit: text })}
+                            style={styles.textInput}
+                            />
+                        <Text style={styles.labelFieldText}>Prix:</Text>
+                        <TextInput 
+                            editable={true}
+                            multiline={false}
+                            maxLength={200}
+                            defaultValue={this.state.textInputPrix}
+                            onChangeText={(text) => this.setState({ textInputPrix: text })}
+                            style={styles.textInput}
+                            />
+                        <Text style={styles.labelFieldText}>Unite de mesure:</Text>
+                        <TextInput 
+                            editable={true}
+                            multiline={false}
+                            maxLength={200}
+                            defaultValue={this.state.textInputUnite}
+                            onChangeText={(text) => this.setState({ textInputUnite: text })}
                             style={styles.textInput}
                             />
                         <TouchableHighlight
@@ -202,7 +230,15 @@ const styles = StyleSheet.create({
     modalView: {
         flex: 1,
         backgroundColor: 'white',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center'
+    },
+    labelFieldText: {
+        marginLeft: 10,
+        fontSize: 18,
+        textDecorationLine: 'underline',
+        color: '#F04903',
+        
+
     }
 })
