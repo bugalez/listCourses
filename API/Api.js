@@ -32,3 +32,20 @@ export function postCoursesFromApiUpdate(item){
         })
     })
 }
+export function postCoursesFromApiCreate(produit, prix, unite){
+    let url = `https://bugalez.tk/api/api/post/create.php`;
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            //id: item.id,
+            produit: produit,
+            prix: prix,
+            unite: unite
+        })
+    })
+}

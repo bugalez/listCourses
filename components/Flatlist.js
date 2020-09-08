@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, FlatList, Text, StyleSheet, Modal, TouchableHighlight, TextInput } from 'react-native';
-import { getCoursesFromApi, postCoursesFromApiUpdate } from '../API/Api';
-import { AntDesign } from '@expo/vector-icons';
+import { getCoursesFromApi, postCoursesFromApiUpdate, postCoursesFromApiCreate } from '../API/Api';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -12,12 +11,12 @@ export default class List extends React.Component {
         this.state = {
             data: [],
             isModalVisible: false,
+            isModalVisibleAdd: false,
             //textInput: '',
             editedItem: 0,
             textInputProduit: '',
             textInputPrix: '',
             textInputUnite: '',
-            selectedId: null
         }
     }
 
@@ -31,6 +30,12 @@ export default class List extends React.Component {
     _setModalVisible = (bool) => {
         this.setState({
             isModalVisible: bool
+        })
+    }
+
+    _setModalVisibleAdd = (bool) => {
+        this.setState({
+            isModalVisibleAdd: bool
         })
     }
 
@@ -56,7 +61,6 @@ export default class List extends React.Component {
     _handleEditItem = (editedItem) => {
         const NewData = this.state.data.map( item => {
             if(item.id === editedItem){
-                //item.produit = this.state.textInput;
                 item.id = editedItem;
                 item.produit = this.state.textInputProduit;
                 item.prix = this.state.textInputPrix;
@@ -71,6 +75,13 @@ export default class List extends React.Component {
         });
     }
 
+    _handleCreateItem = () => {
+                let produit = this.state.textInputProduit;
+                let prix = this.state.textInputPrix;
+                let unite = this.state.textInputUnite;
+                postCoursesFromApiCreate(produit, prix, unite);
+    }
+
 
     _disableItem = (idItem) => {
         const { data } = this.state;
@@ -82,6 +93,12 @@ export default class List extends React.Component {
             }
         })
     }
+
+    _handleUpdate = () => {
+        this.forceUpdate();
+        
+    }
+
     
     renderItem = ({item}) => {
         //const {selectedId, editedItem} = this.state;
@@ -118,12 +135,12 @@ export default class List extends React.Component {
 
     // Charge les elements de l'api au demarrage
     componentDidMount (){
-        this._loadCourseStart()
-    }    
-
+        this._loadCourseStart();
+    }
+    
+  
 
     render() {
-        
         const header = () => {
             return(
                 <View style={styles.header}>
@@ -135,7 +152,13 @@ export default class List extends React.Component {
         return(
             <View style={styles.contentContainer}>
                 <View style={styles.iconAdd}>
-                <TouchableHighlight>
+                <TouchableHighlight
+                    onPress={ ()=>{
+                            this._setModalVisibleAdd(true); 
+                            //this._setTextInput(item.produit, item.prix, item.unite);
+                        }
+                    }
+                >
                 <Ionicons name="ios-add-circle" size={70} color="#953163" />
                 </TouchableHighlight>
                 </View>
@@ -144,13 +167,16 @@ export default class List extends React.Component {
                     data={this.state.data}
                     renderItem={this.renderItem}
                     keyExtractor={item => item.id.toString()}
-                />
+                    refreshing = {this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                    />
+                {/* modal Update */}
                 <Modal animationType="fade" 
                     onRequestClose={() => this._setModalVisible(false)}
                     visible={this.state.isModalVisible}
                     >
                     <View style={styles.modalView}>
-                    <Text>Change</Text>
+                    <Text style={styles.titleModal}>Change</Text>
                         <Text style={styles.labelFieldText}>Nom du produit:</Text>
                         <TextInput 
                             editable={true}
@@ -179,7 +205,6 @@ export default class List extends React.Component {
                             style={styles.textInput}
                             />
                         <TouchableHighlight
-                        
                             underlayColor={"#f1f1f1"}
                             style={[styles.touchableHighlight, {backgroundColor: 'orange'}]}
                             onPress={() => {
@@ -189,6 +214,53 @@ export default class List extends React.Component {
                             }
                         >
                             <Text style={styles.text}>Save</Text>
+                        </TouchableHighlight>
+
+                    </View>
+                </Modal>
+                {/* modal Add */}
+                <Modal animationType="fade" 
+                    onRequestClose={() => this._setModalVisibleAdd(false)}
+                    visible={this.state.isModalVisibleAdd}
+                    >
+                    <View style={styles.modalView}>
+                    <Text style={styles.titleModal}>Ajout d'un produit</Text>
+                        <Text style={styles.labelFieldText}>Nom du produit:</Text>
+                        <TextInput 
+                            editable={true}
+                            multiline={false}
+                            maxLength={200}
+                            onChangeText={(text) => this.setState({ textInputProduit: text })}
+                            style={styles.textInput}
+                            />
+                        <Text style={styles.labelFieldText}>Prix:</Text>
+                        <TextInput 
+                            editable={true}
+                            multiline={false}
+                            maxLength={200}
+                            onChangeText={(text) => this.setState({ textInputPrix: text })}
+                            style={styles.textInput}
+                            />
+                        <Text style={styles.labelFieldText}>Unite de mesure:</Text>
+                        <TextInput 
+                            editable={true}
+                            multiline={false}
+                            maxLength={200}
+                            onChangeText={(text) => this.setState({ textInputUnite: text })}
+                            style={styles.textInput}
+                            />
+                        <TouchableHighlight
+                        
+                            underlayColor={"#f1f1f1"}
+                            style={[styles.touchableHighlight, {backgroundColor: 'orange'}]}
+                            onPress={() => {
+                                this._setModalVisibleAdd(false);
+                                this._handleCreateItem();
+                                this._loadCourseStart()
+                                }
+                            }
+                        >
+                            <Text style={styles.text}>Ajouter</Text>
                         </TouchableHighlight>
 
                     </View>
@@ -275,6 +347,14 @@ const styles = StyleSheet.create({
         zIndex: 10,
         bottom: 20,
         right: 30
+
+    },
+    titleModal: {
+        flex: 1,
+        margin: 10,
+        fontSize: 20,
+        fontWeight: 'bold' ,
+        color: '#F04903',
 
     }
 })
