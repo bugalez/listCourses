@@ -1,24 +1,23 @@
 import React from 'react';
 import { View, FlatList, Text, StyleSheet, Modal, TouchableHighlight, TextInput } from 'react-native';
-import Data from './Data';
 import { getCoursesFromApi, postCoursesFromApiUpdate } from '../API/Api';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default class List extends React.Component {
 
     constructor(props) {
         super(props);
-        //this.initData = Data;
         this.state = {
-            //data: this.initData,
             data: [],
             isModalVisible: false,
             //textInput: '',
             editedItem: 0,
             textInputProduit: '',
             textInputPrix: '',
-            textInputUnite: ''
+            textInputUnite: '',
+            selectedId: null
         }
     }
 
@@ -42,13 +41,15 @@ export default class List extends React.Component {
             textInputProduit: produit,
             textInputPrix: prix,
             textInputUnite: unite,
-            disableItem: false
+            disableItem: false,
+            selectedId: 1,
         })
     }
 
     _setEditedItem = (item) => {
         this.setState({
-            editedItem: item
+            editedItem: item,
+           // selectedId: item
         })
     }
 
@@ -70,38 +71,47 @@ export default class List extends React.Component {
         });
     }
 
-    _disableItem = (idItem) => {
-        console.log(this.state.editedItem);
-            
-    }
 
+    _disableItem = (idItem) => {
+        const { data } = this.state;
+        const newArray = [...data];
+        newArray.splice(newArray.findIndex(item=>item.id === idItem), 1);
+        this.setState(() => {
+            return {
+                data: newArray
+            }
+        })
+    }
+    
     renderItem = ({item}) => {
+        //const {selectedId, editedItem} = this.state;
         return (
-        <TouchableHighlight onPress={() => {
-            this._setModalVisible(true); 
-            this._setTextInput(item.produit, item.prix, item.unite);
-            this._setEditedItem(item.id);
+            <TouchableHighlight onPress={() => {
+                this._setModalVisible(true); 
+                this._setTextInput(item.produit, item.prix, item.unite);
+                this._setEditedItem(item.id);
             }} 
             underlayColor={"#f1f1f1"}
-        >
-            <View style={styles.item}>
-                <TouchableHighlight
-                    onPress={() => {
-                        this._disableItem(item.id);
-                    }}
-                >
-                    <View style={styles.marginLeft}>
-                        <AntDesign name="leftcircle" size={30} color="#FF7416" />
-                    </View>
-                </TouchableHighlight>
-                <View style={styles.viewItems}>
-                    <Text style={[styles.produitText, styles.text]}>{item.produit}</Text>
+            >
+                <View style={styles.item}>
+                    <TouchableHighlight
+                        onPress={() => {
+                            this._disableItem(item.id);
+                            
+                        }}
+                        >
+                        <View style={styles.marginLeft}>
+                        <MaterialCommunityIcons name="delete-circle-outline" size={40} color="#E3000E" />
+                        </View>
+                    </TouchableHighlight>
+                        <View style={styles.viewItems}>
+                            <Text style={[styles.produitText, styles.text]}>{item.produit}</Text>
+                        </View>
+                        
+                        <Text style={[styles.prixText, styles.text]}>{item.prix = item.prix !== null? item.prix: '0,00'}€/</Text>
+                        <Text style={[styles.uniteText, styles.text]}>{item.unite}</Text>
                 </View>
-                
-                <Text style={[styles.prixText, styles.text]}>{item.prix = item.prix !== null? item.prix: '0,00'}€/</Text>
-                <Text style={[styles.uniteText, styles.text]}>{item.unite}</Text>
-        </View>
-        </TouchableHighlight>
+            </TouchableHighlight>
         )
         
     }
