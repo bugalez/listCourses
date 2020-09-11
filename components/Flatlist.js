@@ -2,7 +2,7 @@ import React from 'react';
 import { View, FlatList, Text, StyleSheet, Modal, TouchableHighlight, TextInput } from 'react-native';
 import { getCoursesFromApi, postCoursesFromApiUpdate, postCoursesFromApiCreate } from '../API/Api';
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 export default class List extends React.Component {
 
@@ -12,7 +12,6 @@ export default class List extends React.Component {
             data: [],
             isModalVisible: false,
             isModalVisibleAdd: false,
-            //textInput: '',
             editedItem: 0,
             textInputProduit: '',
             textInputPrix: '',
@@ -118,14 +117,16 @@ export default class List extends React.Component {
                         }}
                         >
                         <View style={styles.marginLeft}>
-                        <MaterialCommunityIcons name="delete-circle-outline" size={40} color="#E3000E" />
+                            <AntDesign name="closecircle" size={24} color="#F04903" />
                         </View>
                     </TouchableHighlight>
                         <View style={styles.viewItems}>
                             <Text style={[styles.produitText, styles.text]}>{item.produit}</Text>
                         </View>
                         
-                        <Text style={[styles.prixText, styles.text]}>{item.prix = item.prix !== null? item.prix: '0,00'}€/</Text>
+                        <Text style={[styles.prixText, styles.text]}>
+                            {item.prix = item.prix !== null? item.prix: '0,00'}€/
+                        </Text>
                         <Text style={[styles.uniteText, styles.text]}>{item.unite}</Text>
                 </View>
             </TouchableHighlight>
@@ -153,9 +154,9 @@ export default class List extends React.Component {
             <View style={styles.contentContainer}>
                 <View style={styles.iconAdd}>
                 <TouchableHighlight
+                underlayColor={"#f1f1f1"}
                     onPress={ ()=>{
                             this._setModalVisibleAdd(true); 
-                            //this._setTextInput(item.produit, item.prix, item.unite);
                         }
                     }
                 >
@@ -176,7 +177,16 @@ export default class List extends React.Component {
                     visible={this.state.isModalVisible}
                     >
                     <View style={styles.modalView}>
-                    <Text style={styles.titleModal}>Change</Text>
+                        <TouchableHighlight
+                            underlayColor={"#f1f1f1"}
+                            onPress={() => this._setModalVisible(false)}
+                        >
+                        <View style={styles.modalIcon}>
+                            <Text style={styles.titleModal}>Change</Text>
+                            <AntDesign style={styles.iconant} name="close" size={24} color="#F04903" />
+                        </View>
+
+                        </TouchableHighlight>                        
                         <Text style={styles.labelFieldText}>Nom du produit:</Text>
                         <TextInput 
                             editable={true}
@@ -224,7 +234,16 @@ export default class List extends React.Component {
                     visible={this.state.isModalVisibleAdd}
                     >
                     <View style={styles.modalView}>
-                    <Text style={styles.titleModal}>Ajout d'un produit</Text>
+                        <TouchableHighlight
+                        underlayColor={"#f1f1f1"}
+                            onPress={() => this._setModalVisibleAdd(false)}
+                        >
+                            <View style={styles.modalIcon}>
+                                <Text style={styles.titleModal}>Ajout d'un produit</Text>
+                                <AntDesign style={styles.iconant} name="close" size={24} color="#F04903" />
+                            </View>
+
+                        </TouchableHighlight>                        
                         <Text style={styles.labelFieldText}>Nom du produit:</Text>
                         <TextInput 
                             editable={true}
@@ -347,14 +366,24 @@ const styles = StyleSheet.create({
         zIndex: 10,
         bottom: 20,
         right: 30
-
+        
     },
     titleModal: {
         flex: 1,
+        marginHorizontal:20,
         margin: 10,
         fontSize: 20,
         fontWeight: 'bold' ,
         color: '#F04903',
-
+    },
+    modalIcon: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 100,
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    },
+    iconant: {
+        marginHorizontal: 20,
     }
 })
