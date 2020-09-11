@@ -1,5 +1,5 @@
 export function getCoursesFromApi() {
-    let url = 'https://domaine.tld/api/api/post/read.php';
+    let url = 'https://bugalez.tk/api/api/post/read.php';
     
     return fetch(url)
     .then(res=>res.json())
@@ -7,7 +7,7 @@ export function getCoursesFromApi() {
 }
 
 export function getCoursesFromApiwithText(text){
-    let url = `https://domaine.tld/api/api/post/read_single.php?produit=${text}`;
+    let url = `https://bugalez.tk/api/api/post/read_single.php?produit=${text}`;
     
     return fetch(url)
     .then(res=>res.json())
@@ -16,7 +16,7 @@ export function getCoursesFromApiwithText(text){
 
 
 export function postCoursesFromApiUpdate(item){
-    let url = `https://domaine.tld/api/api/post/update.php`;
+    let url = `https://bugalez.tk/api/api/post/update.php`;
 
     return fetch(url, {
         method: 'POST',
@@ -33,7 +33,7 @@ export function postCoursesFromApiUpdate(item){
     })
 }
 export function postCoursesFromApiCreate(produit, prix, unite){
-    let url = `https://domaine.tld/api/api/post/create.php`;
+    let url = `https://bugalez.tk/api/api/post/create.php`;
 
     return fetch(url, {
         method: 'POST',
