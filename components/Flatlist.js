@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, FlatList, Text, StyleSheet, Modal, TouchableHighlight, TextInput } from 'react-native';
 import { getCoursesFromApi, postCoursesFromApiUpdate, postCoursesFromApiCreate } from '../API/Api';
-import { Ionicons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
+import { Ionicons, AntDesign, EvilIcons } from '@expo/vector-icons';
+// import { AntDesign } from '@expo/vector-icons';
+// import { EvilIcons } from '@expo/vector-icons';
 
 export default class List extends React.Component {
 
@@ -117,7 +118,7 @@ export default class List extends React.Component {
                         }}
                         >
                         <View style={styles.marginLeft}>
-                            <AntDesign name="closecircle" size={24} color="#F04903" />
+                            <AntDesign name="closecircle" size={40} color="#F04903" />
                         </View>
                     </TouchableHighlight>
                         <View style={styles.viewItems}>
@@ -145,9 +146,17 @@ export default class List extends React.Component {
         const header = () => {
             return(
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>Liste des courses</Text>
+                    <Text style={[styles.headerText]}>Liste des courses</Text>
+                    <TouchableHighlight
+                        onPress={()=>{
+                            this._loadCourseStart()
+                        }}
+                        underlayColor={"#d35400"}
+                    >
+                        <EvilIcons name="refresh" size={50} color="#2ecc71" />
+                    </TouchableHighlight>
                 </View>
-            )
+                            )
         }
 
         return(
@@ -319,10 +328,11 @@ const styles = StyleSheet.create({
         borderRadius: 3
     },
     header: {
+        flexDirection: 'row',
         height: 100,
         backgroundColor: '#F04903',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     headerText: {
         fontSize: 20,
@@ -385,5 +395,8 @@ const styles = StyleSheet.create({
     },
     iconant: {
         marginHorizontal: 20,
+    },
+    marginLeft: {
+        marginLeft: 10,
     }
 })
